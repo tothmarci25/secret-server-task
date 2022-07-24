@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Illuminate\Http\Request;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\JsonSerializableNormalizer;
@@ -17,18 +16,25 @@ class ResponseSerializer
         'application/json' => 'json'
     ];
 
+    protected $mimeType;
+
 
     public function __construct()
     {
         $encoders = [new XmlEncoder(), new JsonEncoder()];
         $normalizers = [new JsonSerializableNormalizer()];
         $this->serializer = new Serializer($normalizers, $encoders);
+        $this->mimeType = request()->prefers(array_keys($this->mimeTypeMap));
+    }
+
+    public function getMimeType()
+    {
+        return $this->mimeType ?: 'application/json';
     }
 
     public function serialize($value, $xmlRootNodeName = null)
     {
-        $preferredMimeTye = request()->prefers(array_keys($this->mimeTypeMap));
-        $format = isset($preferredMimeTye) ? data_get($this->mimeTypeMap, $preferredMimeTye, 'json') : 'json';
+        $format = data_get($this->mimeTypeMap, $this->getMimeType(), 'json');
         return $this->serializer->serialize(
             $value,
             $format,

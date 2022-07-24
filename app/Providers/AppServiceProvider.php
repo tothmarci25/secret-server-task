@@ -31,9 +31,16 @@ class AppServiceProvider extends ServiceProvider
 
         Schema::defaultStringLength(191);
 
-        Response::macro('serializeAsRequested', function ($value, $xmlRootNodeName = null) {
+        Response::macro('serializeAsRequested', function ($value, $xmlRootNodeName = null, $headers = []) {
             $serializer = new ResponseSerializer();
-            return Response::make($serializer->serialize($value, $xmlRootNodeName));
+            if (!isset($headers['Content-Type'])) {
+                $headers = array_merge($headers, ['Content-Type' => $serializer->getMimeType()]);
+            }
+            return Response::make(
+                $serializer->serialize($value, $xmlRootNodeName),
+                200,
+                $headers
+            );
         });
     }
 }

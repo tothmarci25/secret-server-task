@@ -18,7 +18,7 @@ class SecretResource extends JsonResource
             'hash' => $this->hash,
             'secretText' => $this->secret_text,
             'createdAt' => $this->created_at ?? $this->created_at->toJSON(),
-            'expiresAt' => $this->created_at ?? $this->created_at->toJSON(),
+            'expiresAt' => $this->expires_at ?? $this->expires_at->toJSON(),
             'remainingViews' => $this->remaining_views,
         ];
     }

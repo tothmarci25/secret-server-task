@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\MissingValue;
 
 class SecretResource extends JsonResource
 {
@@ -17,8 +18,8 @@ class SecretResource extends JsonResource
         return [
             'hash' => $this->hash,
             'secretText' => $this->secret_text,
-            'createdAt' => $this->created_at ?? $this->created_at->toJSON(),
-            'expiresAt' => $this->expires_at ?? $this->expires_at->toJSON(),
+            'createdAt' => isset($this->created_at) ? $this->created_at->toJSON() : new MissingValue(),
+            'expiresAt' => isset($this->expires_at) ? $this->expires_at->toJSON() : new MissingValue(),
             'remainingViews' => $this->remaining_views,
         ];
     }

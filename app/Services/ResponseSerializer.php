@@ -17,20 +17,17 @@ class ResponseSerializer
         'application/json' => 'json'
     ];
 
-    private $request;
 
-
-    public function __construct(Request $request)
+    public function __construct()
     {
         $encoders = [new XmlEncoder(), new JsonEncoder()];
         $normalizers = [new JsonSerializableNormalizer()];
         $this->serializer = new Serializer($normalizers, $encoders);
-        $this->request = $request;
     }
 
     public function serialize($value, $xmlRootNodeName = null)
     {
-        $preferredMimeTye = $this->request->prefers(array_keys($this->mimeTypeMap));
+        $preferredMimeTye = request()->prefers(array_keys($this->mimeTypeMap));
         $format = isset($preferredMimeTye) ? data_get($this->mimeTypeMap, $preferredMimeTye, 'json') : 'json';
         return $this->serializer->serialize(
             $value,

@@ -16,3 +16,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('secret', [SecretController::class, 'store']);
+Route::get('secret/{hash}', [SecretController::class, 'show']);

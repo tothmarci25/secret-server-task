@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\JsonSerializableNormalizer;
@@ -16,7 +17,7 @@ class ResponseSerializer
         'application/json' => 'json'
     ];
 
-    protected $mimeType;
+    protected $requestedMimeType;
 
 
     public function __construct()
@@ -24,17 +25,24 @@ class ResponseSerializer
         $encoders = [new XmlEncoder(), new JsonEncoder()];
         $normalizers = [new JsonSerializableNormalizer()];
         $this->serializer = new Serializer($normalizers, $encoders);
-        $this->mimeType = request()->prefers(array_keys($this->mimeTypeMap));
+        $this->requestedMimeType = request()->prefers(array_keys($this->mimeTypeMap));
     }
 
-    public function getMimeType()
+    public function getRequestedMimeType(): ?string
     {
-        return $this->mimeType ?: 'application/json';
+        return $this->requestedMimeType;
     }
 
-    public function serialize($value, $xmlRootNodeName = null)
+
+    /**
+     * @throws HttpException
+     */
+    public function serialize($value, $xmlRootNodeName = null): string
     {
-        $format = data_get($this->mimeTypeMap, $this->getMimeType(), 'json');
+        if (!isset($this->requestedMimeType)) {
+            throw new HttpException(406, 'Requested content type not supported');
+        }
+        $format = $this->mimeTypeMap[$this->requestedMimeType];
         return $this->serializer->serialize(
             $value,
             $format,

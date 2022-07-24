@@ -3,15 +3,15 @@ info:
   description: "This is an API of a secret service. You can save your secret by using the API. You can restrict the access of a secret after the certen number of views or after a certen period of time."
   version: "1.0.0"
   title: "Secret Server"
-host: "api.your-secret-server.com"
-basePath: "/v1"
+host: "secret-server-task-api.herokuapp.com"
+basePath: "/api"
 tags:
 - name: "secret"
   externalDocs:
     description: "Find out more"
     url: "http://swagger.io"
 schemes:
-- "http"
+- "https"
 paths:
   /secret:
     post:
@@ -50,7 +50,7 @@ paths:
             $ref: "#/definitions/Secret"
         405:
           description: "Invalid input"
-          
+
   /secret/{hash}:
     get:
       tags:
